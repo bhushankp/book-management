@@ -1,10 +1,14 @@
 package main
 
 import (
+	"book-management/internal/api/v1/book/handler"
+	"book-management/internal/api/v1/book/router"
 	"book-management/internal/config"
 	"book-management/internal/db"
 	"book-management/internal/pkg/logger"
 	"book-management/internal/pkg/validator"
+	"book-management/internal/repository"
+	"book-management/internal/service"
 	"context"
 	"fmt"
 	"net/http"
@@ -12,8 +16,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/gorilla/mux"
 
 	"go.uber.org/zap"
 )
@@ -25,11 +27,12 @@ func main() {
 	db.Connect(cfg)
 	validator.Init()
 
-	// Setup router
-	r := mux.NewRouter()
-	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("OK"))
-	})
+	// DI
+	repo := repository.NewBookRepository(db.DB)
+	svc := service.NewBookService(repo)
+	h := handler.NewHandler(svc)
+
+	r := router.NewRouter(h)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Server.Port),
