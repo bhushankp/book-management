@@ -4,7 +4,7 @@ server:
 database:
   host: localhost
   port: 3306
-  user: root
-  password: password
-  name: bookdb
+  user: patil
+  password: developer
+  name: myapp
   sslmode: disable
