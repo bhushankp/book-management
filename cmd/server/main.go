@@ -2,12 +2,18 @@ package main
 
 import (
 	"book-management/internal/config"
-	"fmt"
+	"book-management/internal/pkg/logger"
+
+	"go.uber.org/zap"
 )
 
 func main() {
 
 	cfg := config.LoadConfig()
-	fmt.Printf("server Port : %d", cfg.Server.Port)
+	logger.InitLogger()
+
+	logger.Log.Info("config loaded",
+		zap.Int("port", cfg.Server.Port),
+	)
 
 }
