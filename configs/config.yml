@@ -8,3 +8,6 @@ database:
   password: developer
   name: myapp
   sslmode: disable
+
+auth:
+  jwtsecret: supersecret_dev_only
