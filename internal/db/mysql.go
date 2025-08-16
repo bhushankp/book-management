@@ -16,16 +16,15 @@ var DB *gorm.DB
 
 func Connect(cfg *config.Config) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.Database.User, cfg.Database.Password,
-		cfg.Database.Host, cfg.Database.Port,
-		cfg.Database.Name)
+		cfg.Database.User, cfg.Database.Password, cfg.Database.Host, cfg.Database.Port, cfg.Database.Name)
 
 	var err error
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		logger.Log.Fatal("Database connection failed", zap.Error(err))
+		logger.Log.Fatal("db connect failed", zap.Error(err))
 	}
-
-	DB.AutoMigrate(&models.Book{})
-	logger.Log.Info("Connected to MySQL successfully")
+	if err := DB.AutoMigrate(&models.Book{}); err != nil {
+		logger.Log.Fatal("db migrate failed", zap.Error(err))
+	}
+	logger.Log.Info("db connected")
 }
